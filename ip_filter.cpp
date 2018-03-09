@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -10,7 +11,7 @@
 // ("11.", '.') -> ["11", ""]
 // (".11", '.') -> ["", "11"]
 // ("11.22", '.') -> ["11", "22"]
-std::vector<std::string> split(const std::string &str, char d)
+auto split(const std::string &str, char d)
 {
     std::vector<std::string> r;
 
@@ -37,20 +38,38 @@ int main(int argc, char const *argv[])
 
         for(std::string line; std::getline(std::cin, line);)
         {
-            std::vector<std::string> v = split(line, '\t');
-            ip_pool.push_back(split(v.at(0), '.'));
+            auto v = split(line, '\t');
+            auto buf = split(v.at(0), '.');
+            if (buf.size() == 4)
+                ip_pool.push_back(buf);
         }
 
         // TODO reverse lexicographically sort
 
-        for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
+        std::sort(ip_pool.begin(), ip_pool.end(),
+                  [](auto a, auto b) -> bool
+                  {
+                      if (a.size() != b.size())
+                          return false;
+                      for (int i = 0; i < a.size(); ++i)
+                      {
+                          if (a[i] != b[i]) {
+                              if (a[i].size() != b[i].size())
+                                  return a[i].size() > b[i].size();
+                              else return a[i] > b[i];
+                          }
+                      }
+                      return false;
+                  }
+        );
+
+        for(const auto ip : ip_pool)
         {
-            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
+            for(auto ip_part = ip.cbegin(); ip_part != ip.cend(); ++ip_part)
             {
-                if (ip_part != ip->cbegin())
+                if (ip_part != ip.cbegin())
                 {
                     std::cout << ".";
-
                 }
                 std::cout << *ip_part;
             }
