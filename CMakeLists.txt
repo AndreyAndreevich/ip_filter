@@ -4,20 +4,26 @@ project(ip_filter VERSION 0.0)#.$ENV{TRAVIS_BUILD_NUMBER})
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
-add_executable(${PROJECT_NAME} ip_filter.cpp)
+add_executable(${PROJECT_NAME} ip_filter.h main.cpp)
 
-#add_executable(ip_filter_test ip_filter_test.cpp)
+set(TEST_NAME ip_filter_test)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+add_executable(${TEST_NAME} ip_filter.h ip_filter_test.cpp)
+
+set_target_properties(${PROJECT_NAME} ${TEST_NAME} PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED ON
         COMPILE_OPTIONS -Wpedantic -Wall -Wextra
         )
 
+set_target_properties(${TEST_NAME} PROPERTIES
+        COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
+        INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR}
+        )
 
-#############################
-#тесты
-#############################
+target_link_libraries(${TEST_NAME}
+        ${Boost_LIBRARIES}
+        )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
@@ -33,4 +39,4 @@ include(CPack)
 
 enable_testing()
 
-#add_test(test_version test_version)
+add_test(${TEST_NAME} ${TEST_NAME})
