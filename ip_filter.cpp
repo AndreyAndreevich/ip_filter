@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 #include <algorithm>
+#include <tuple>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -34,46 +36,26 @@ int main(int argc, char const *argv[])
 {
     try
     {
-        std::vector<std::vector<std::string> > ip_pool;
+        std::set<std::tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ip_pool;
 
         for(std::string line; std::getline(std::cin, line);)
         {
             auto v = split(line, '\t');
             auto buf = split(v.at(0), '.');
             if (buf.size() == 4)
-                ip_pool.push_back(buf);
+                ip_pool.insert(std::make_tuple((uint8_t)atoi(buf[0].c_str()),
+                                               (uint8_t)atoi(buf[1].c_str()),
+                                               (uint8_t)atoi(buf[2].c_str()),
+                                               (uint8_t)atoi(buf[3].c_str())));
         }
 
         // TODO reverse lexicographically sort
 
-        std::sort(ip_pool.begin(), ip_pool.end(),
-                  [](auto a, auto b) -> bool
-                  {
-                      if (a.size() != b.size())
-                          return false;
-                      for (int i = 0; i < a.size(); ++i)
-                      {
-                          if (a[i] != b[i]) {
-                              if (a[i].size() != b[i].size())
-                                  return a[i].size() > b[i].size();
-                              else return a[i] > b[i];
-                          }
-                      }
-                      return false;
-                  }
-        );
-
-        for(const auto ip : ip_pool)
+        for(auto ip = ip_pool.crbegin();ip != ip_pool.crend();++ip)
         {
-            for(auto ip_part = ip.cbegin(); ip_part != ip.cend(); ++ip_part)
-            {
-                if (ip_part != ip.cbegin())
-                {
-                    std::cout << ".";
-                }
-                std::cout << *ip_part;
-            }
-            std::cout << std::endl;
+            std::cout << (int)std::get<0>(*ip) << "." << (int)std::get<1>(*ip) << "."
+                      << (int)std::get<2>(*ip) << "." << (int)std::get<3>(*ip)
+                      << std::endl;
         }
 
         // 222.173.235.246
