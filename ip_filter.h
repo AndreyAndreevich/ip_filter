@@ -4,6 +4,7 @@
 #include <set>
 
 typedef  std::set<std::tuple<uint8_t,uint8_t,uint8_t,uint8_t>> id_set;
+typedef  std::tuple<uint8_t,uint8_t,uint8_t,uint8_t> ip_tuple;
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -58,7 +59,7 @@ auto filter_rec(const id_set &set, const std::size_t &N, T key, Args ...args)
         throw std::runtime_error("Error filter key");
     id_set result;
     for (auto it = set.begin();; ++it) {
-        it = std::find_if(it, set.cend(), [key,N](auto value) {
+        it = std::find_if(it, set.cend(), [key,N](ip_tuple value) {
             switch (N - sizeof...(args) - 1) {
                 case 0: return (uint8_t)key == std::get<0>(value);
                 case 1: return (uint8_t)key == std::get<1>(value);
@@ -92,7 +93,7 @@ auto filter_any(const id_set &set, const int &key)
         throw std::runtime_error("Error filter key");
     id_set result;
     for (auto it = set.begin();; ++it) {
-        it = std::find_if(it, set.cend(), [key](auto value) {
+        it = std::find_if(it, set.cend(), [key](ip_tuple value) {
                 return  (uint8_t)key == std::get<0>(value) ||
                         (uint8_t)key == std::get<1>(value) ||
                         (uint8_t)key == std::get<2>(value) ||
