@@ -30,6 +30,10 @@ auto split(const std::string &str, char d)
     return r;
 }
 
+
+
+
+
 void out(const id_set &ip_pool) {
     for(auto ip = ip_pool.crbegin();ip != ip_pool.crend();++ip)
     {
@@ -38,6 +42,9 @@ void out(const id_set &ip_pool) {
                   << std::endl;
     }
 }
+
+
+
 
 id_set filter_rec(const id_set &set, const std::size_t &N)
 {
@@ -73,4 +80,29 @@ template<typename... Args>
 id_set filter(const id_set &set,Args ...args)
 {
     return filter_rec(set,sizeof...(args),args...);
+}
+
+
+
+
+
+id_set filter_any(const id_set &set, const int &key)
+{
+    if (key>255 || key < 0)
+        throw std::runtime_error("Error filter key");
+    id_set result;
+    for (auto it = set.begin();; ++it) {
+        it = std::find_if(it, set.cend(), [key](auto value) {
+                return  (uint8_t)key == std::get<0>(value) ||
+                        (uint8_t)key == std::get<1>(value) ||
+                        (uint8_t)key == std::get<2>(value) ||
+                        (uint8_t)key == std::get<3>(value);
+        });
+
+        if (it == set.cend())
+            break;
+
+        result.insert(*it);
+    }
+    return result;
 }

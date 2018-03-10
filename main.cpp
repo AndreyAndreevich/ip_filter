@@ -31,8 +31,8 @@ int main(int argc, char const *argv[])
         // 1.29.168.152
         // 1.1.234.8
 
-        auto ip_p = filter(ip_pool,1);
-        out(ip_p);
+        auto ip = filter(ip_pool,1);
+        out(ip);
 
         // TODO filter by first byte and output
         // ip = filter(1)
@@ -45,8 +45,8 @@ int main(int argc, char const *argv[])
 
         // TODO filter by first and second bytes and output
 
-        ip_p = filter(ip_pool,46,70);
-        out(ip_p);
+        ip = filter(ip_pool,46,70);
+        out(ip);
 
         // ip = filter(46, 70)
 
@@ -56,7 +56,8 @@ int main(int argc, char const *argv[])
         // 46.70.29.76
 
         // TODO filter by any byte and output
-        // ip = filter_any(46)
+        ip = filter_any(ip_pool,46);
+        out(ip);
 
         // 186.204.34.46
         // 186.46.222.194
