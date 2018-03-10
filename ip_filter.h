@@ -16,7 +16,7 @@ auto split(const std::string &str, char d)
     std::vector<std::string> r;
 
     std::string::size_type start = 0;
-    std::string::size_type stop = str.find_first_of(d);
+    auto stop = str.find_first_of(d);
     while(stop != std::string::npos)
     {
         r.push_back(str.substr(start, stop - start));
@@ -46,13 +46,13 @@ void out(const id_set &ip_pool) {
 
 
 
-id_set filter_rec(const id_set &set, const std::size_t &N)
+auto filter_rec(const id_set &set, const std::size_t &N)
 {
     return set;
 }
 
 template<typename T, typename... Args>
-id_set filter_rec(const id_set &set, const std::size_t &N, T key, Args ...args)
+auto filter_rec(const id_set &set, const std::size_t &N, T key, Args ...args)
 {
     if (key>255 || key < 0)
         throw std::runtime_error("Error filter key");
@@ -77,7 +77,7 @@ id_set filter_rec(const id_set &set, const std::size_t &N, T key, Args ...args)
 }
 
 template<typename... Args>
-id_set filter(const id_set &set,Args ...args)
+auto filter(const id_set &set,Args ...args)
 {
     return filter_rec(set,sizeof...(args),args...);
 }
@@ -86,7 +86,7 @@ id_set filter(const id_set &set,Args ...args)
 
 
 
-id_set filter_any(const id_set &set, const int &key)
+auto filter_any(const id_set &set, const int &key)
 {
     if (key>255 || key < 0)
         throw std::runtime_error("Error filter key");
