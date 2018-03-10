@@ -1,6 +1,4 @@
-#include <set>
 #include <algorithm>
-#include <tuple>
 
 #include "ip_filter.h"
 
@@ -8,7 +6,7 @@ int main(int argc, char const *argv[])
 {
     try
     {
-        std::set<std::tuple<uint8_t,uint8_t,uint8_t,uint8_t>> ip_pool;
+        id_set ip_pool;
 
         for(std::string line; std::getline(std::cin, line);)
         {
@@ -23,12 +21,7 @@ int main(int argc, char const *argv[])
 
         // TODO reverse lexicographically sort
 
-        for(auto ip = ip_pool.crbegin();ip != ip_pool.crend();++ip)
-        {
-            std::cout << (int)std::get<0>(*ip) << "." << (int)std::get<1>(*ip) << "."
-                      << (int)std::get<2>(*ip) << "." << (int)std::get<3>(*ip)
-                      << std::endl;
-        }
+        out(ip_pool);
 
         // 222.173.235.246
         // 222.130.177.64
@@ -37,6 +30,9 @@ int main(int argc, char const *argv[])
         // 1.70.44.170
         // 1.29.168.152
         // 1.1.234.8
+
+        auto ip_p = filter(ip_pool,1);
+        out(ip_p);
 
         // TODO filter by first byte and output
         // ip = filter(1)
@@ -48,6 +44,10 @@ int main(int argc, char const *argv[])
         // 1.1.234.8
 
         // TODO filter by first and second bytes and output
+
+        ip_p = filter(ip_pool,46,70);
+        out(ip_p);
+
         // ip = filter(46, 70)
 
         // 46.70.225.39
