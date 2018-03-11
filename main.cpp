@@ -11,17 +11,14 @@ int main(int argc, char const *argv[])
         for(std::string line; std::getline(std::cin, line);)
         {
             auto v = split(line, '\t');
-            auto buf = split(v.at(0), '.');
-            if (buf.size() == 4)
-                ip_pool.insert(std::make_tuple((uint8_t)atoi(buf[0].c_str()),
-                                               (uint8_t)atoi(buf[1].c_str()),
-                                               (uint8_t)atoi(buf[2].c_str()),
-                                               (uint8_t)atoi(buf[3].c_str())));
+            ip_pool.push_back(split(v.at(0), '.'));
         }
 
         // TODO reverse lexicographically sort
 
-        out(ip_pool);
+        std::sort(ip_pool.begin(),ip_pool.end(),cmp);
+        ip_pool.resize(std::unique(ip_pool.begin(),ip_pool.end())-ip_pool.begin());
+        std::cout << ip_pool;
 
         // 222.173.235.246
         // 222.130.177.64
@@ -31,11 +28,11 @@ int main(int argc, char const *argv[])
         // 1.29.168.152
         // 1.1.234.8
 
-        auto ip = filter(ip_pool,1);
-        out(ip);
-
         // TODO filter by first byte and output
         // ip = filter(1)
+
+        auto ip = filter(ip_pool,1);
+        std::cout << ip;
 
         // 1.231.69.33
         // 1.87.203.225
@@ -44,11 +41,10 @@ int main(int argc, char const *argv[])
         // 1.1.234.8
 
         // TODO filter by first and second bytes and output
+        // ip = filter(46, 70)
 
         ip = filter(ip_pool,46,70);
-        out(ip);
-
-        // ip = filter(46, 70)
+        std::cout << ip;
 
         // 46.70.225.39
         // 46.70.147.26
@@ -57,7 +53,7 @@ int main(int argc, char const *argv[])
 
         // TODO filter by any byte and output
         ip = filter_any(ip_pool,46);
-        out(ip);
+        std::cout << ip;
 
         // 186.204.34.46
         // 186.46.222.194

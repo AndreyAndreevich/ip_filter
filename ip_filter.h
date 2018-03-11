@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
-#include <set>
+#include <cstdlib>
 
-typedef  std::set<std::tuple<uint8_t,uint8_t,uint8_t,uint8_t>> id_set;
+typedef  std::vector<std::vector<std::string>> id_set;
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -30,79 +30,80 @@ auto split(const std::string &str, char d)
     return r;
 }
 
+bool cmp(std::vector<std::string> &vL,std::vector<std::string> &vR)
+{
+    for (int i = 0; i < 4; i++) {
+        if (vL[i].size() != vR[i].size())
+            return  vL[i].size() > vR[i].size();
+        if (vL[i] != vR[i])
+            return vL[i] > vR[i];
+    }
+    return true;
+}
 
 
-
-
-void out(const id_set &ip_pool) {
-    for(auto ip = ip_pool.crbegin();ip != ip_pool.crend();++ip)
+std::ostream& operator<<(std::ostream &out, const id_set &ip_pool) {
+    for(auto ip : ip_pool)
     {
-        std::cout << (int)std::get<0>(*ip) << "." << (int)std::get<1>(*ip) << "."
-                  << (int)std::get<2>(*ip) << "." << (int)std::get<3>(*ip)
-                  << std::endl;
+        for (auto i = ip.cbegin(); i!= ip.cend();i++) {
+            if (i != ip.cbegin())
+                out << ".";
+            out << *i;
+        }
+        out << std::endl;
     }
 }
 
 
-
-
-auto filter_rec(const id_set &set, const std::size_t &N)
+auto filter_rec(const id_set &ip, const int &N)
 {
-    return set;
+    return ip;
 }
 
 template<typename T, typename... Args>
-auto filter_rec(const id_set &set, const std::size_t &N, T key, Args ...args)
+auto filter_rec(const id_set &ip, const int &N, T key, Args ...args)
 {
     if (key>255 || key < 0)
         throw std::runtime_error("Error filter key");
+
     id_set result;
-    for (auto it = set.begin();; ++it) {
-        it = std::find_if(it, set.cend(), [key,N](auto value) {
-            switch (N - sizeof...(args) - 1) {
-                case 0: return (uint8_t)key == std::get<0>(value);
-                case 1: return (uint8_t)key == std::get<1>(value);
-                case 2: return (uint8_t)key == std::get<2>(value);
-                case 3: return (uint8_t)key == std::get<3>(value);
-                default: throw std::runtime_error("Error number arguments");
-            }
+    for (auto it = ip.begin();; ++it) {
+        it = std::find_if(it, ip.end(), [key,N](auto value) {
+            return key == atoi(value[N].c_str());
         });
 
-        if (it == set.cend())
+        if (it == ip.end())
             break;
 
-        result.insert(*it);
+        result.push_back(*it);
     }
-    return filter_rec(result,N,args...);
+    return filter_rec(result,N+1,args...);
 }
 
 template<typename... Args>
-auto filter(const id_set &set,Args ...args)
+auto filter(const id_set &ip,Args ...args)
 {
-    return filter_rec(set,sizeof...(args),args...);
+    return filter_rec(ip,0,args...);
 }
-
-
-
-
 
 auto filter_any(const id_set &set, const int &key)
 {
     if (key>255 || key < 0)
         throw std::runtime_error("Error filter key");
+
     id_set result;
     for (auto it = set.begin();; ++it) {
         it = std::find_if(it, set.cend(), [key](auto value) {
-                return  (uint8_t)key == std::get<0>(value) ||
-                        (uint8_t)key == std::get<1>(value) ||
-                        (uint8_t)key == std::get<2>(value) ||
-                        (uint8_t)key == std::get<3>(value);
+                return  std::find_if(value.cbegin(),value.cend(),[key](auto value)
+                {
+                    return key == atoi(value.c_str());
+                }) != value.cend();
         });
 
         if (it == set.cend())
             break;
 
-        result.insert(*it);
+        result.push_back(*it);
     }
     return result;
 }
