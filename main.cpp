@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
         // TODO reverse lexicographically sort
 
         std::sort(ip_pool.begin(),ip_pool.end(),cmp);
-        ip_pool.resize(std::unique(ip_pool.begin(),ip_pool.end())-ip_pool.begin());
+
         std::cout << ip_pool;
 
         // 222.173.235.246
@@ -31,8 +31,7 @@ int main(int argc, char const *argv[])
         // TODO filter by first byte and output
         // ip = filter(1)
 
-        auto ip = filter(ip_pool,1);
-        std::cout << ip;
+        std::cout << filter(ip_pool,1);
 
         // 1.231.69.33
         // 1.87.203.225
@@ -43,8 +42,7 @@ int main(int argc, char const *argv[])
         // TODO filter by first and second bytes and output
         // ip = filter(46, 70)
 
-        ip = filter(ip_pool,46,70);
-        std::cout << ip;
+        std::cout << filter(ip_pool,46,70);
 
         // 46.70.225.39
         // 46.70.147.26
@@ -52,8 +50,8 @@ int main(int argc, char const *argv[])
         // 46.70.29.76
 
         // TODO filter by any byte and output
-        ip = filter_any(ip_pool,46);
-        std::cout << ip;
+
+        std::cout << filter_any(ip_pool,46);
 
         // 186.204.34.46
         // 186.46.222.194

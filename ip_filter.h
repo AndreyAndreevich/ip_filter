@@ -32,7 +32,7 @@ auto split(const std::string &str, char d)
 
 bool cmp(std::vector<std::string> &vL,std::vector<std::string> &vR)
 {
-    for (int i = 0; i < 4; i++) {
+    for (auto i = 0; i < 4; i++) {
         if (vL[i].size() != vR[i].size())
             return  vL[i].size() > vR[i].size();
         if (vL[i] != vR[i])
@@ -45,65 +45,62 @@ bool cmp(std::vector<std::string> &vL,std::vector<std::string> &vR)
 std::ostream& operator<<(std::ostream &out, const id_set &ip_pool) {
     for(auto ip : ip_pool)
     {
-        for (auto i = ip.cbegin(); i!= ip.cend();i++) {
-            if (i != ip.cbegin())
+        for (auto &i : ip) {
+            if (&i != &ip.front())
                 out << ".";
-            out << *i;
+            out << i;
         }
         out << std::endl;
     }
 }
 
-
-auto filter_rec(const id_set &ip, const int &N)
-{
-    return ip;
-}
-
-template<typename T, typename... Args>
-auto filter_rec(const id_set &ip, const int &N, T key, Args ...args)
-{
-    if (key>255 || key < 0)
-        throw std::runtime_error("Error filter key");
-
-    id_set result;
-    for (auto it = ip.begin();; ++it) {
-        it = std::find_if(it, ip.end(), [key,N](auto value) {
-            return key == atoi(value[N].c_str());
-        });
-
-        if (it == ip.end())
-            break;
-
-        result.push_back(*it);
-    }
-    return filter_rec(result,N+1,args...);
-}
-
+///реализую функцию фильра с переменным числом аргументов (вдруг понадобится)))
+///использую магический трюк
 template<typename... Args>
 auto filter(const id_set &ip,Args ...args)
 {
-    return filter_rec(ip,0,args...);
-}
-
-auto filter_any(const id_set &set, const int &key)
-{
-    if (key>255 || key < 0)
-        throw std::runtime_error("Error filter key");
-
+    std::vector<std::string> sKey = {(1,std::to_string(args))...};
+    const size_t N = sizeof...(args);
     id_set result;
-    for (auto it = set.begin();; ++it) {
-        it = std::find_if(it, set.cend(), [key](auto value) {
-                return  std::find_if(value.cbegin(),value.cend(),[key](auto value)
-                {
-                    return key == atoi(value.c_str());
-                }) != value.cend();
+    auto it = ip.cbegin();
+    while (it != ip.cend()) {
+        it = std::find_if(it, ip.cend(), [sKey] (auto value) mutable {
+            value.resize(N);
+            return sKey == value;
         });
 
-        if (it == set.cend())
-            break;
+        if (it != ip.cend()) {
+            result.push_back(*it);
+            it++;
+        }
+    }
 
-        result.push_back(*it);
+    return result;
+}
+
+
+
+auto filter_any(const id_set &ip, const size_t &key)
+{
+    const std::string sKey = std::to_string(key);
+    id_set result;
+
+    auto it = ip.cbegin();
+    while (it != ip.cend()) {
+        it = std::find_if(it, ip.cend(), [sKey](auto value) {
+
+                return  std::find_if(value.cbegin(),value.cend(),[sKey](auto value)
+                {
+                    return sKey == value;
+                }) != value.cend();
+
+        });
+
+        if (it != ip.cend()) {
+            result.push_back(*it);
+            it++;
+        }
     }
     return result;
 }
+
