@@ -3,8 +3,6 @@
 #include <tuple>
 #include <cstdlib>
 
-typedef  std::vector<std::vector<std::string>> id_set;
-
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
 // ("..", '.') -> ["", "", ""]
@@ -30,30 +28,13 @@ auto split(const std::string &str, char d)
     return r;
 }
 
-bool cmp(std::vector<std::string> &vL,std::vector<std::string> &vR)
-{
-    for (auto i = 0; i < 4; i++) {
-        if (vL[i].size() != vR[i].size())
-            return  vL[i].size() > vR[i].size();
-        if (vL[i] != vR[i])
-            return vL[i] > vR[i];
-    }
-    return true;
+
+std::ostream& operator<<(std::ostream &out,
+                         const std::tuple<int,int,int,int> &ip) {
+    out << std::get<0>(ip) << "." << std::get<1>(ip) << "."
+            << std::get<2>(ip) << "." << std::get<3>(ip) << std::endl;
 }
-
-
-std::ostream& operator<<(std::ostream &out, const id_set &ip_pool) {
-    for(auto ip : ip_pool)
-    {
-        for (auto &i : ip) {
-            if (&i != &ip.front())
-                out << ".";
-            out << i;
-        }
-        out << std::endl;
-    }
-}
-
+/*
 ///реализую функцию фильра с переменным числом аргументов (вдруг понадобится)))
 ///использую магический трюк
 template<typename... Args>
@@ -104,3 +85,4 @@ auto filter_any(const id_set &ip, const size_t &key)
     return result;
 }
 
+*/

@@ -6,19 +6,20 @@ int main(int argc, char const *argv[])
 {
     try
     {
-        id_set ip_pool;
+        std::vector<std::tuple<int,int,int,int>> ip_pool;
 
         for(std::string line; std::getline(std::cin, line);)
         {
-            auto v = split(line, '\t');
-            ip_pool.push_back(split(v.at(0), '.'));
+            auto v = split(split(line, '\t').at(0),'.');
+            ip_pool.push_back(std::make_tuple(std::stoi(v.at(0)),std::stoi(v.at(1)),
+                                              std::stoi(v.at(2)),std::stoi(v.at(3))));
         }
 
         // TODO reverse lexicographically sort
 
-        std::sort(ip_pool.begin(),ip_pool.end(),cmp);
-
-        std::cout << ip_pool;
+        std::sort(ip_pool.rbegin(),ip_pool.rend());
+        for(const auto& ip : ip_pool)
+            std::cout << ip;
 
         // 222.173.235.246
         // 222.130.177.64
@@ -31,7 +32,10 @@ int main(int argc, char const *argv[])
         // TODO filter by first byte and output
         // ip = filter(1)
 
-        std::cout << filter(ip_pool,1);
+        for (const auto &ip : ip_pool) {
+            if (std::get<0>(ip) == 1)
+                std::cout << ip;
+        }
 
         // 1.231.69.33
         // 1.87.203.225
@@ -42,7 +46,10 @@ int main(int argc, char const *argv[])
         // TODO filter by first and second bytes and output
         // ip = filter(46, 70)
 
-        std::cout << filter(ip_pool,46,70);
+        for (const auto &ip : ip_pool) {
+            if (std::get<0>(ip) == 1 && std::get<1>(ip) == 70)
+                std::cout << ip;
+        }
 
         // 46.70.225.39
         // 46.70.147.26
@@ -51,7 +58,13 @@ int main(int argc, char const *argv[])
 
         // TODO filter by any byte and output
 
-        std::cout << filter_any(ip_pool,46);
+        for (const auto &ip : ip_pool) {
+            if (std::get<0>(ip) == 46 || std::get<1>(ip) == 46 ||
+                std::get<2>(ip) == 46 || std::get<3>(ip) == 46)
+                std::cout << ip;
+        }
+
+
 
         // 186.204.34.46
         // 186.46.222.194
