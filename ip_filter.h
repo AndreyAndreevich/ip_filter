@@ -53,7 +53,7 @@ void process(std::istream &in, std::ostream &out) {
         for (const auto &item : v) {
             int num = std::stoi(item);
             if (num < 0 || num > 255)
-                throw std::runtime_error("Incorrect IP");
+                throw std::runtime_error("Incorrect IP: " + item);
             check_int_vector.push_back(num);
         }
 

@@ -15,6 +15,8 @@ BOOST_AUTO_TEST_SUITE(test_suite_ip_filter)
         BOOST_CHECK(split("11.22", '.') == std::vector<std::string>({"11", "22"}));
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     BOOST_AUTO_TEST_CASE(test_process_correct) {
 
         std::string correct_in_data = std::string() +
@@ -61,6 +63,9 @@ BOOST_AUTO_TEST_SUITE(test_suite_ip_filter)
         BOOST_CHECK_EQUAL(out_buffer.str(), correct_out_data);
 
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     BOOST_AUTO_TEST_CASE(test_process_incorrect) {
 
         std::stringbuf out_buffer;
