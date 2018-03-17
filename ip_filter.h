@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
-#include <tuple>
 #include <cstdlib>
+#include <utility>
+
+using ip_t = std::vector<int>;
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -28,17 +30,20 @@ auto split(const std::string &str, char d)
     return r;
 }
 
-std::ostream& operator<<(std::ostream &out, const std::tuple<int,int,int,int> &ip) {
-    out << std::get<0>(ip) << "." << std::get<1>(ip) << "."
-        << std::get<2>(ip) << "." << std::get<3>(ip) << std::endl;
-}
 
+std::ostream& operator<<(std::ostream &out, const ip_t &ip) {
+    for (auto num = ip.cbegin(); num != ip.cend(); num++) {
+        if (num != ip.cbegin())
+            out << ".";
+        out << *num;
+    }
+    out << std::endl;
+}
 
 
 void process(std::istream &in, std::ostream &out) {
 
-    std::vector<std::tuple<int,int,int,int>> ip_pool;
-
+    std::vector<ip_t> ip_pool;
 
     /// перебираем входные данные и собираем вектор ip адрессов
     for(std::string line; std::getline(in, line);)
@@ -48,17 +53,17 @@ void process(std::istream &in, std::ostream &out) {
         if (v.size() != 4)
             throw std::runtime_error("Error IP size");
 
-        std::vector<int> check_int_vector;
+        ip_t check_int_vector;
+        check_int_vector.reserve(4);
 
-        for (const auto &item : v) {
-            int num = std::stoi(item);
-            if (num < 0 || num > 255)
-                throw std::runtime_error("Incorrect IP: " + item);
+        if (std::any_of(v.cbegin(),v.cend(), [&check_int_vector](auto item){
+            auto num = std::stoi(item);
             check_int_vector.push_back(num);
-        }
+            return num < 0 || num > 255;
+        }))
+            throw std::runtime_error("Incorrect IP"); //////////
 
-        ip_pool.push_back(std::make_tuple(check_int_vector.at(0),check_int_vector.at(1),
-                                          check_int_vector.at(2),check_int_vector.at(3)));
+        ip_pool.push_back(std::move(check_int_vector));
     }
 
     // TODO reverse lexicographically sort
@@ -78,7 +83,7 @@ void process(std::istream &in, std::ostream &out) {
     // TODO filter by first byte and output
 
     for (const auto &ip : ip_pool) {
-        if (std::get<0>(ip) == 1)
+        if (ip.at(0) == 1)
             out << ip;
     }
 
@@ -91,7 +96,7 @@ void process(std::istream &in, std::ostream &out) {
     // TODO filter by first and second bytes and output
 
     for (const auto &ip : ip_pool) {
-        if (std::get<0>(ip) == 46 && std::get<1>(ip) == 70)
+        if (ip.at(0) == 46 && ip.at(1) == 70)
             out << ip;
     }
 
@@ -103,8 +108,9 @@ void process(std::istream &in, std::ostream &out) {
     // TODO filter by any byte and output
 
     for (const auto &ip : ip_pool) {
-        if (std::get<0>(ip) == 46 || std::get<1>(ip) == 46 ||
-            std::get<2>(ip) == 46 || std::get<3>(ip) == 46)
+        if (std::any_of(ip.cbegin(),ip.cend(),[](auto num){
+            return num == 46;
+        }))
             out << ip;
     }
 
