@@ -38,6 +38,7 @@ std::ostream& operator<<(std::ostream &out, const ip_t &ip) {
         out << *num;
     }
     out << std::endl;
+    return out;
 }
 
 
@@ -58,12 +59,12 @@ void process(std::istream &in, std::ostream &out) {
 
         if (std::any_of(v.cbegin(),v.cend(), [&check_int_vector](auto item){
             auto num = std::stoi(item);
-            check_int_vector.push_back(num);
+            check_int_vector.emplace_back(num);
             return num < 0 || num > 255;
         }))
             throw std::runtime_error("Incorrect IP"); //////////
 
-        ip_pool.push_back(std::move(check_int_vector));
+        ip_pool.emplace_back(std::move(check_int_vector));
     }
 
     // TODO reverse lexicographically sort
